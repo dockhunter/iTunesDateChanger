@@ -11,23 +11,27 @@ import java.util.regex.Pattern;
 
 public class UserInput {
 
-    private static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    protected static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static String file;
 
-    public static String readLine() {
+    /* The user inputs the whole path to the directory where the audio files are */
+    public static String readInput() {
         try {
             System.out.println("Type in the path to the directory: ");
             return input.readLine();
         } catch (IOException e) {
-            return e.toString();
+            return e.toString() + " ERROR";
         }
     }
 
-    public static void handleInput(String path) {
+    /* Runs through the given directory (recursively) and checks for audio files
+    * with a specific format. The whole path to each audio file is the passed
+    * to the FileReader function */
+    protected static void handleInput(String path) throws IOException {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
 
-        for (int i = 0; i < listOfFiles.length; i++) {
+        for (int i = 0; i < 10; i++) {
             if (listOfFiles[i].isFile()) {
                 Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|wma)$", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(listOfFiles[i].getName());
@@ -45,8 +49,8 @@ public class UserInput {
 
     public static void processInput() throws WrongFormatException {
         try {
-            handleInput(readLine());
-        } catch (Exception e) {
+            handleInput(readInput());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
