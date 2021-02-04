@@ -1,6 +1,5 @@
 package consoleUI;
-
-import core.FileReader;
+import core.ExtractDateTime;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,21 +11,21 @@ import java.util.regex.Pattern;
 public class UserInput {
 
     protected static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-    static String file;
 
     /* The user inputs the whole path to the directory where the audio files are */
     public static String readInput() {
         try {
-            System.out.println("Type in the path to the directory: ");
+            System.out.println("Type in the path to your music folder:\n" +
+                    "(i.e.: G:/Daniel/My Music/BoxSingles)\n");
             return input.readLine();
         } catch (IOException e) {
             return e.toString() + " ERROR";
         }
     }
 
-    /* Runs through the given directory (recursively) and checks for audio files
-    * with a specific format. The whole path to each audio file is the passed
-    * to the FileReader function */
+    /* It then runs through the given directory (recursively) and checks for audio files
+    * that have specific audio formats. The whole path to each audio file is then passed
+    * to the ExtractDateTime class */
     protected static void handleInput(String path) throws IOException {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
@@ -36,8 +35,7 @@ public class UserInput {
                 Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|wma)$", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(listOfFiles[i].getName());
                 if (matcher.matches()) {
-                    FileReader.read(listOfFiles[i]+ "");
-                    break;
+                    ExtractDateTime.extract(listOfFiles[i]+ "");
                 } else {
                     System.out.println(listOfFiles[i].getName().trim() + " is not an audio file. Skipping...");
                 }

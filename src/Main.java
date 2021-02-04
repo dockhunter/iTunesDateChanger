@@ -4,7 +4,6 @@ import java.lang.invoke.WrongMethodTypeException;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        // G:/Daniel/My Music/BoxSingles
         try{
             UserInput.processInput();
         } catch (WrongMethodTypeException e) {

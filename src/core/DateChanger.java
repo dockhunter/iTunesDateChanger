@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-
 public class DateChanger {
 
     /* The received date and time is fed into the windows command prompt.
@@ -19,6 +18,7 @@ public class DateChanger {
             builder.redirectErrorStream(true);
             Process p = builder.start();
 
+            /* Logging */
             BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line = r.readLine();
             System.out.println(line);

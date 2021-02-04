@@ -6,18 +6,19 @@ import java.io.InputStreamReader;
 
 public class iTunesHandler {
 
-    protected static void addFiles(String pathToFile) throws IOException {
+    protected static void addFileToiTunes(String pathToFile) throws IOException {
 
-        /* Search for iTunes COM object */
-        String findiTunes = "powershell.exe Get-CimInstance Win32_COMSetting | " +
+        /* Searching for iTunes in the Windows */
+        String iTunes = "powershell.exe Get-CimInstance Win32_COMSetting | " +
                 "Select-Object ProgId, Caption | " +
                 "Where-Object Caption -ILike \"*itunes*\"";
-        String addFile = "$itunes.CurrentPlaylist().AddFile(\" "+ pathToFile + "\")";
+        String addFile = "$itunes.AddFile(\" " + pathToFile + "\")";
 
-        /* Executing the command */
-        Process powerShellProcess = Runtime.getRuntime().exec(findiTunes + addFile);
-        /* Getting the results */
+        /* Executing the command in powershell */
+        Process powerShellProcess = Runtime.getRuntime().exec(iTunes + addFile);
         powerShellProcess.getOutputStream().close();
+
+        /* Logging */
         String line;
         System.out.println("Standard Output:");
         BufferedReader stdout = new BufferedReader(new InputStreamReader(
