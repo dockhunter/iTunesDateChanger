@@ -6,9 +6,9 @@ import java.io.InputStreamReader;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
-            UserInput.processInput();
+            UserInput.readInput();
         } catch (Exception e) {
             e.printStackTrace();
         }

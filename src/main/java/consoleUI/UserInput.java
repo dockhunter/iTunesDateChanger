@@ -20,13 +20,13 @@ public class UserInput {
     static String resyncDateAndTime =  "powershell.exe -command W32tm /resync /force";
 
     /* The user inputs the whole path to the directory where the audio files are */
-    protected static String readInput() {
+    public static void readInput() {
         try {
             System.out.println("Path to music folder:");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-            return input.readLine();
+            processInput(input.readLine());
         } catch (Exception e) {
-            return "ERROR: " + e;
+            e.printStackTrace();
         }
     }
 
@@ -35,42 +35,37 @@ public class UserInput {
     * that have specific audio formats. The whole path to each audio file is then passed
     * into the CommandExec class where they are executed as commands via cmd.exe or powershell.exe.
     */
-    protected static void handleInput(String path) throws IOException {
+    protected static void processInput(String path) throws IOException {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
 
-        /* Starts up iTunes */
-        CommandExec.cmdInputExec("start itunes.exe");
-        if(listOfFiles != null)
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-                Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|wma)$", Pattern.CASE_INSENSITIVE);
-                Matcher matcher = pattern.matcher(listOfFiles[i].getName());
-                if (matcher.matches()) {
-                    /* Changing the systems date and time according to the file */
-                    CommandExec.cmdInputExec(ExtractDateTime.extract(listOfFiles[i]+ ""));
-                    /* Adding the file to iTunes */
-                    System.out.println("Adding audio file: " + listOfFiles[i].getName());
-                    CommandExec.powerInputExec(iTunes + iTunesAdd + path +
-                            "/"+ listOfFiles[i].getName() + "\")");
-                } else {
-                    System.out.println(listOfFiles[i].getName().trim() + " is not an audio file. Skipping...");
-                }
-            } else if (listOfFiles[i].isDirectory()){
-                handleInput(path + listOfFiles[i].getName());
-            } else {
-                continue;
-            }
-        }
-
-        /* Setting back date and time, finishing process */
-        CommandExec.cmdInputExec(resyncDateAndTime);
-        System.out.println("Done");
-    }
-
-    public static void processInput() {
         try {
-            handleInput(readInput());
+            /* Starts up iTunes */
+            CommandExec.cmdInputExec("start itunes.exe");
+
+            if (listOfFiles != null)
+                for (File listOfFile : listOfFiles) {
+                    if (listOfFile.isFile()) {
+                        Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|wma)$", Pattern.CASE_INSENSITIVE);
+                        Matcher matcher = pattern.matcher(listOfFile.getName());
+                        if (matcher.matches()) {
+                            /* Changing the systems date and time according to the file */
+                            CommandExec.cmdInputExec(ExtractDateTime.extract(listOfFile + ""));
+                            /* Adding the file to iTunes */
+                            System.out.println("Adding audio file: " + listOfFile.getName());
+                            CommandExec.powerInputExec(iTunes + iTunesAdd + path +
+                                    "/" + listOfFile.getName() + "\")");
+                        } else {
+                            System.out.println(listOfFile.getName().trim() + " is not an audio file. Skipping...");
+                        }
+                    } else if (listOfFile.isDirectory()) {
+                        processInput(path + listOfFile.getName());
+                    }
+                }
+
+            /* Setting back date and time, finishing process */
+            CommandExec.cmdInputExec(resyncDateAndTime);
+            System.out.println("Done");
         } catch (IOException e) {
             e.printStackTrace();
         }
