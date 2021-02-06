@@ -10,4 +10,7 @@ The main purpose of this application (in steps) is to:
  4. set the system time according to this date & time
  5. add the audio file into iTunes
 
-The application uses **Java** but there are also Windows command prompt commands used throught **cmd.exe** and **powershell.exe**.
+The application is a maven project that uses **Java** but there are also functions that execute command prompt and powershell commands throught **cmd.exe** and **powershell.exe**.
+
+Update 2021.02.06:
+Dependencie added for jPowerShell. 
