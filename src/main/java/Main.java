@@ -8,8 +8,10 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            UserInput.readInput();
-        } catch (Exception e) {
+            System.out.println("Path to music folder:");
+            BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+            UserInput.processInput(input.readLine());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
