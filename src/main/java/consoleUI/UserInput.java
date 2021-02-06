@@ -2,8 +2,11 @@ package consoleUI;
 
 import core.ExtractDateTime;
 import core.CommandExec;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,13 +19,13 @@ public class UserInput {
     /* Powershell command for setting back the time and date */
     static String resyncDateAndTime =  "powershell.exe -command W32tm /resync /force";
 
+    protected static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
     /* The user inputs the whole path to the directory where the audio files are */
     protected static String readInput() {
         try {
-            //System.out.println("Type in the path to your music folder:");
-            CommandExec.cmdInputExec("start itunes.exe");
-            return "G:/Daniel/My Music/BoxSingles";
-            //return input.readLine();
+            System.out.println("Type in the path to your music folder:");
+            return input.readLine();
         } catch (Exception e) {
             return "ERROR: " + e;
         }
@@ -36,6 +39,9 @@ public class UserInput {
     protected static void handleInput(String path) throws IOException {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
+
+        /* Starts up iTunes */
+        CommandExec.cmdInputExec("start itunes.exe");
 
         for (int i = 0; i < 5; i++) {
             if (listOfFiles[i].isFile()) {
