@@ -18,8 +18,9 @@ public class ExtractDateTime {
             Path file = Paths.get(fileNameAndPath);
             BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
             String[] dateAndTime = attr.lastModifiedTime().toString().split("[a-zA-Z]");
-            /* Extract and format the date for powershell */
-            return "date " + dateAndTime[0] + " && time " + dateAndTime[1];
+            /* Extract and format the date for powershell */;
+            return "powershell.exe -command set-date -date '" +
+                    dateAndTime[0].replace("-","/") + " " + dateAndTime[1] + "'";
         } catch (IOException e) {
             return e.toString();
         }
