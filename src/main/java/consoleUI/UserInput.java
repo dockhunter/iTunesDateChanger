@@ -43,7 +43,7 @@ public class UserInput {
         /* Starts up iTunes */
         CommandExec.cmdInputExec("start itunes.exe");
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
                 Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|wma)$", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(listOfFiles[i].getName());
