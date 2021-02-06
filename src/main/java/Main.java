@@ -1,12 +1,11 @@
 import consoleUI.UserInput;
-import java.lang.invoke.WrongMethodTypeException;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        try{
+        try {
             UserInput.processInput();
-        } catch (WrongMethodTypeException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
