@@ -1,4 +1,5 @@
 import consoleUI.UserInput;
+import core.CommandExec;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,5 +15,8 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        /* Setting back date and time, finishing process */
+        CommandExec.cmdInputExec(UserInput.resyncDateAndTime);
+        System.out.println("Done");
     }
 }
