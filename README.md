@@ -14,5 +14,6 @@ The application is a maven project that uses **Java** but there are also functio
 
 Update 2021.02.06:
 Dependencie added for profesorfalken jPowerShell. 
+
 Update 2021.02.24:
 Dependencie added for tongFei Progressbar 0.9.0
