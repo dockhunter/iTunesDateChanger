@@ -1,87 +1,97 @@
 package consoleUI;
 
-import core.Counter;
-import core.ExtractDateTime;
-import core.CommandExec;
 import core.WrongFormatException;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+
+import static core.Collector.collectFiles;
+import static core.Collector.pathValidator;
+import static core.CommandExec.jPowerShellExec;
+import static core.CommandExec.powerShellExec;
 
 public class UserInput {
 
-    /* Powershell commands for starting up and adding files to iTunes */
-    private static String iTunes = "$itunes = New-Object -ComObject iTunes.Application; ";
-    private static String iTunesAdd = "$itunes.LibraryPlaylist.addFile(\\\"";
-    private static String feed = "";
-    public static int count = 0;
+    // Powershell commands for starting up and adding files to iTunes.
+    private static final String iTunesOpenCommand = "$itunes = New-Object -ComObject iTunes.Application; ";
+    private static String commandFeed = "";
+    public static int sumOfFiles = 0;
+    public static int processedFileCount = 0;
+    public static List<String> supportedAudioFiles = new ArrayList<>();
+    public static List<String> convertibleAudioFiles = new ArrayList<>();
 
-    /* Powershell command for setting back the time and date */
-    public static String resyncDateAndTime =  "W32tm /resync /force";
-    private static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-
-    /* Starting function that keeps the input feed alive */
-    public static void startInput() throws IOException, WrongFormatException {
+    // Starting function that keeps the input feed alive.
+    public static void startInput() throws WrongFormatException {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         try {
-            processInput(input.readLine());
+            String userPath = input.readLine();
+            processInput(userPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /*
-     * It then runs through the given directory (recursively) and checks for audio files
-     * that have specific audio formats. The whole path to each audio file is then passed
-     * into the CommandExec class where they are executed as commands via cmd.exe or powershell.exe.
-     */
-    public static void processInput(String path) throws IOException, WrongFormatException {
-
-        File folder = new File(path.replaceAll("(\\\\|/)$", ""));
-        File[] listOfFiles = folder.listFiles();
-
-        if (listOfFiles != null && path.matches("\\p{Upper}:((\\\\|/).+)+")) {
-            count = Counter.countFiles(listOfFiles);
-            for (File file : listOfFiles) {
-                    Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|aac|aiff|wma|wav)$", Pattern.CASE_INSENSITIVE);
-                    Matcher matcher = pattern.matcher(file.getName());
-                    if (file.isFile() && matcher.find()) {
-                        /* Assembling the string for the powershell command. */
-                        feed += ExtractDateTime.extract(file + "") + "; " +
-                                iTunesAdd + path + "\\" + file.getName() + "\\\"); ";
-                    } else if (file.isDirectory()) {
-                        if (feed != "") {
-                            System.out.println("Executing: " + iTunes + feed);
-                            CommandExec.powerShellExec(iTunes + feed);
-                            feed = "";
-                            count = 0;
-                        }
-                        processInput(path + "\\" + file.getName());
-                    } else {
-                        System.out.println(file.getName().trim() + " is not an audio file. Skipping...");
-                    }
+    //
+    // It then runs through the given directory (recursively) and checks for audio files
+    // that have specific audio formats. The whole path to each audio file is then passed
+    // into an execution function where they are executed via powershell commands.
+    //
+    public static void processInput(String userPath) throws IOException, WrongFormatException {
+        if (pathValidator(userPath)) {
+            collectFiles(userPath);
+            for (String audioFile : supportedAudioFiles) {
+                commandFeed += audioFile;
+                if (iTunesOpenCommand.length() + commandFeed.length() > 25000) {
+                    executeInput(commandFeed.split(";").length/2);
+                    commandFeed = "";
+                } else if (commandFeed.split(";").length - 1 == 400) {
+                    executeInput(200);
+                    commandFeed = "";
+                }
             }
-        } else if (path.matches("(EXIT)|(exit)|(q)|(Q)")) {
+            if(convertibleAudioFiles.size() != 0) {
+                ProgressBarBuilder pbb = new ProgressBarBuilder();
+                ProgressBar.wrap(convertibleAudioFiles,pbb).forEach(
+                        audioFile -> jPowerShellExec(iTunesOpenCommand + audioFile));
+            }
+
+            executeInput(commandFeed.split(";").length/2);
+            // Setting back date and time, finishing process.
+            powerShellExec( "W32tm /resync /force",0);
+            cleanUpVariables();
+
+            System.out.println("Process finished.\nYou may enter another path: ");
+        } else if (userPath.matches("(EXIT)|(exit)|(q)|(Q)")) {
             System.exit(0);
         } else {
-            System.err.println("Path not valid. Please enter a valid path.");
+            System.err.println("Incorrect path! Please enter a valid path:");
             startInput();
         }
     }
 
-    public static void finishProcess() {
+    // Feeds the concatenated commands into the powershell command line for execution.
+    public static void executeInput(int numberOfFiles) {
         try {
-            System.out.println("Executing: " + iTunes + feed);
-            /* Executing the powershell commands */
-            CommandExec.powerShellExec(iTunes + feed);
-            /* Setting back date and time, finishing process */
-            CommandExec.powerShellExec(resyncDateAndTime);
-            System.out.println("Process finished successfully.\nYou can enter another folder path: ");
+            System.out.println("Executing: " + iTunesOpenCommand + commandFeed +
+                    "\nAudio files processed: " + sumOfFiles +
+                    "\\" + (processedFileCount += numberOfFiles));
+            // Executing the powershell commands
+            powerShellExec(iTunesOpenCommand + commandFeed, numberOfFiles);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void cleanUpVariables() {
+        commandFeed = "";
+        sumOfFiles = 0;
+        processedFileCount = 0;
+        convertibleAudioFiles.clear();
+        supportedAudioFiles.clear();
     }
 }

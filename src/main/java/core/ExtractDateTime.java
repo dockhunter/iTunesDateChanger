@@ -8,17 +8,17 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class ExtractDateTime {
 
-    /*
-    * The path of each audio file from the UserInput class is processed
-    * by extracting their "last modified date and time" attributes into an array
-    * and returned as a string for command execution.
-    */
+    //
+    // The path of each audio file from the UserInput class is processed
+    // by extracting their "last modified date and time" attributes into an array
+    // and returned as a string for command execution.
+    //
     public static String extract(String fileNameAndPath) {
         try {
             Path file = Paths.get(fileNameAndPath);
             BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
             String[] dateAndTime = attr.lastModifiedTime().toString().split("[a-zA-Z]");
-            /* Extract and format the date for powershell */;
+            // Extract and format the date for powershell.
             return "set-date -date '" + dateAndTime[0].replace("-","/") + " " + dateAndTime[1] + "'";
         } catch (IOException e) {
             return e.toString();
