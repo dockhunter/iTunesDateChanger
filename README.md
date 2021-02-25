@@ -12,5 +12,8 @@ The main purpose of this application (in steps) is to:
 
 The application is a maven project that uses **Java** but there are also functions that execute command prompt and powershell commands throught **cmd.exe** and **powershell.exe**.
 
-Update 2021.02.06: Dependencie added for profesorfalken jPowerShell 
-Update 2021.02.24: Dependencie added for tongFei Progressbar 0.9.0
+Update 2021.02.06:  
+Dependencie added for profesorfalken jPowerShell  
+
+Update 2021.02.24:  
+Dependencie added for tongFei Progressbar 0.9.0
