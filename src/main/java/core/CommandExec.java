@@ -19,7 +19,8 @@ public class CommandExec {
     public static void cmdInputExec(String command) {
         try {
             /* Executing through command prompt */
-            ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c" + command);
+            String[] arguments = new String[] {"/bin/bash", "-c", command};
+            ProcessBuilder builder = new ProcessBuilder(arguments);
             builder.redirectErrorStream(true);
             Process process = builder.start();
 
@@ -31,17 +32,4 @@ public class CommandExec {
             e.printStackTrace();
         }
     }
-
-    public static void powerInputExec (String command) throws IOException {
-        try (PowerShell powerShell = PowerShell.openSession()) {
-            /* Executing commands through powershell */
-            PowerShellResponse response = powerShell.executeCommand(command);
-
-            /* Logging */
-            System.out.println(response.getCommandOutput());
-        } catch (PowerShellNotAvailableException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
