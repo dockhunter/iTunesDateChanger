@@ -1,6 +1,6 @@
-import consoleUI.UserInput;
-import static consoleUI.UserInput.processInputMac;
-import static core.CommandExec.terminalInputExec;
+import consoleUIMac.UserInput;
+import static consoleUIMac.UserInput.processInput;
+import static coreMac.CommandExec.terminalInputExec;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,9 +13,9 @@ public class Main {
         try {
             System.out.println("Path to music folder:");
             BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-            processInputMac(input.readLine());
+            processInput(input.readLine());
             /* Setting back date and time, finishing process */
-            terminalInputExec(UserInput.resyncDateAndTimeMac);
+            terminalInputExec(UserInput.resyncDateAndTime);
             System.out.println("Done");
         } catch (IOException e) {
             e.printStackTrace();

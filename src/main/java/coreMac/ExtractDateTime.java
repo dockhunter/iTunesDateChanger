@@ -1,4 +1,4 @@
-package core;
+package coreMac;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ public class ExtractDateTime {
     * by extracting their "last modified date and time" attributes into an array
     * and returned as a string for command execution.
     */
-    public static String extractMac(String fileNameAndPath) {
+    public static String extract(String fileNameAndPath) {
         try {
             Path file = Paths.get(fileNameAndPath);
             BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
