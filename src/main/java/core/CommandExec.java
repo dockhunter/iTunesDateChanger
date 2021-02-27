@@ -1,9 +1,5 @@
 package core;
 
-import com.profesorfalken.jpowershell.PowerShell;
-import com.profesorfalken.jpowershell.PowerShellNotAvailableException;
-import com.profesorfalken.jpowershell.PowerShellResponse;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,7 +12,7 @@ public class CommandExec {
      * It is advisable to not browse the internet during this process as
      * certain websites can raise issues regarding outdated or not-yet existing certificates.
     */
-    public static void cmdInputExec(String command) {
+    public static void terminalInputExec(String command) {
         try {
             /* Executing through command prompt */
             String[] arguments = new String[] {"/bin/bash", "-c", command};
