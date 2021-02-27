@@ -11,7 +11,6 @@ public class Main {
                 System.out.println("Type in the full path to your music folder: ");
                 // Processing the input from the user.
                 startInput();
-//                powerShellExec( "W32tm /resync /force", 0);
             }
         } catch (Exception e) {
             System.err.println("Wrong format. " + e.getMessage());

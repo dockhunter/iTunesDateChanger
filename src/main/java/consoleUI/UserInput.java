@@ -54,13 +54,13 @@ public class UserInput {
                     commandFeed = "";
                 }
             }
+            executeInput(commandFeed.split(";").length/2);
+
             if(convertibleAudioFiles.size() != 0) {
                 ProgressBarBuilder pbb = new ProgressBarBuilder();
                 ProgressBar.wrap(convertibleAudioFiles,pbb).forEach(
                         audioFile -> jPowerShellExec(iTunesOpenCommand + audioFile));
             }
-
-            executeInput(commandFeed.split(";").length/2);
             // Setting back date and time, finishing process.
             powerShellExec( "W32tm /resync /force",0);
             cleanUpVariables();
