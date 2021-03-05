@@ -1,55 +1,71 @@
 package consoleUIMac;
 
+import core.WrongFormatException;
 import coreMac.ExtractDateTime;
-import coreMac.CommandExec;
+import me.tongfei.progressbar.ProgressBar;
 
+import static coreMac.CommandExec.*;
+import static coreMac.Collector.*;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserInput {
 
-    /* Powershell commands for adding files to iTunes */
-    static String iTunesAdd = "open \"";
-
-    /* Powershell command for setting back the time and date */
+    // Command for setting back the time and date
     public static String resyncDateAndTime =  "sudo systemsetup -setnetworktimeserver time.apple.com";
+    public static List<File> audioFiles = new ArrayList<>();
+    public static int sumOfFiles = 0;
 
-    /*
-    * It then runs through the given directory (recursively) and checks for audio files
-    * that have specific audio formats. The whole path to each audio file is then passed
-    * into the CommandExec class where they are executed as commands via cmd.exe or powershell.exe.
-    */
-    public static void processInput(String path) throws IOException {
-        File folder = new File(path);
-        File[] listOfFiles = folder.listFiles();
-
-        /* Starting up the Music Application */
-        CommandExec.terminalInputExec("open -a music.app");
-
+    // Starting function that keeps the input feed alive.
+    public static void startInput() throws WrongFormatException {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         try {
-            if (listOfFiles != null)
-                for (File file : listOfFiles) {
-                    if (file.isFile()) {
-                        Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|aiff|aac)$", Pattern.CASE_INSENSITIVE);
-                        Matcher matcher = pattern.matcher(file.getName());
-                        if (matcher.matches()) {
-                            /* Changing the systems date and time according to the file */
-                            CommandExec.terminalInputExec(ExtractDateTime.extract(file + ""));
-                            /* Adding the file to iTunes */
-                            System.out.println("Adding audio file: " + file.getName());
-                            CommandExec.terminalInputExec(iTunesAdd + path +
-                                    "/" + file.getName() + "\"");
-                        } else {
-                            System.out.println("Not an audio file: " + file.getName().trim() + " ..Skipping");
-                        }
-                    } else if (file.isDirectory()) {
-                        processInput(path + "/" + file.getName());
-                    }
-                }
+            String userPath = input.readLine();
+            processInput(userPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    //
+    // Processing the users input by first validating the path
+    // that the user typed in, if the path is valid,
+    // a collector function collects all the supported audio files it finds.
+    // The collected files are then executed / added to iTunes via terminal commands
+    //
+    public static void processInput(String userPath) throws IOException {
+        // Starting up iTunes / the Music app
+        terminalInputExec("open -a music.app");
+
+        try {
+            if (pathValidator(userPath)) {
+                collectFiles(userPath);
+                for (File file : ProgressBar.wrap(audioFiles, "Progress: ")) {
+                    /* Changing the systems date and time according to the file */
+                    terminalInputExec(ExtractDateTime.extract(file + ""));
+                    /* Adding the file to iTunes */
+                    System.out.println("Adding audio file: " + file.getName());
+                    terminalInputExec("open \"" + userPath +
+                            "/" + file.getName() + "\"");
+                }
+                // Setting back date and time, finishing process.
+                terminalInputExec(resyncDateAndTime);
+                sumOfFiles = 0;
+                System.out.println("Process finished.\nYou may enter another path: ");
+            } else if (userPath.matches("(EXIT)|(exit)|(q)|(Q)")) {
+                System.exit(0);
+            } else {
+                System.err.println("Incorrect path! Please enter a valid path:");
+                startInput();
+            }
+        } catch (WrongFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
