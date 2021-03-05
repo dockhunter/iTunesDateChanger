@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             while(true) {
-                System.out.println("Type in the full path to your music folder: ");
+                System.out.println("Path to your music folder: ");
                 // Processing the input from the user.
                 startInput();
             }
