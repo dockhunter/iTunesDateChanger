@@ -37,13 +37,14 @@ public class UserInput {
     }
 
     //
-    // It then runs through the given directory (recursively) and checks for audio files
+    // Runs through the given directory (recursively) and checks for audio files
     // that have specific audio formats. The whole path to each audio file is then passed
     // into an execution function where they are executed via powershell commands.
     //
     public static void processInput(String userPath) throws IOException, WrongFormatException {
         if (pathValidator(userPath)) {
             collectFiles(userPath);
+            powerShellExec("taskkill /f /im explorer.exe", 0);
             for (String audioFile : supportedAudioFiles) {
                 commandFeed += audioFile;
                 if (iTunesOpenCommand.length() + commandFeed.length() > 25000) {
@@ -62,7 +63,7 @@ public class UserInput {
                         audioFile -> jPowerShellExec(iTunesOpenCommand + audioFile));
             }
             // Setting back date and time, finishing process.
-            powerShellExec( "W32tm /resync /force",0);
+            powerShellExec( "start explorer.exe; W32tm /resync /force",0);
             cleanUpVariables();
 
             System.out.println("Process finished.\nYou may enter another path: ");
@@ -78,7 +79,7 @@ public class UserInput {
     public static void executeInput(int numberOfFiles) {
         try {
             System.out.println("Executing: " + iTunesOpenCommand + commandFeed +
-                    "\nAudio files processed: " + sumOfFiles +
+                    "\nProcessing audio files: " + sumOfFiles +
                     "\\" + (processedFileCount += numberOfFiles));
             // Executing the powershell commands
             powerShellExec(iTunesOpenCommand + commandFeed, numberOfFiles);
