@@ -15,13 +15,13 @@ public class CommandExec {
     //
     public static void terminalInputExec(String command) {
         try {
-            // Executing through command prompt
+            // Executing through command prompt.
             String[] arguments = new String[] {"/bin/bash", "-c", command};
             ProcessBuilder builder = new ProcessBuilder(arguments);
             builder.redirectErrorStream(true);
             Process process = builder.start();
 
-            // Logging
+            // Logging.
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
             System.out.println(bufferedReader.readLine());

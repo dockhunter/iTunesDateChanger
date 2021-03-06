@@ -13,17 +13,32 @@ import static consoleUI.UserInput.*;
 
 public class CommandExec {
 
-    // The received data is fed into the powershell command line.
     //
     // Some commands will change the date and time setting for Windows.
     // It is advisable to not browse the internet during this process as
     // certain websites can raise issues regarding outdated or not-yet existing certificates.
     //
+    // Used for converting audio files.
+    public static void jPowerShellExec (String commandString) {
+        System.out.println("Executing: " + commandString + "\nAudio files processed: " + sumOfFiles +
+                "\\" + (processedFileCount += 1));
+        // Creates PowerShell session (we can execute several commands in the same session).
+        try (PowerShell powerShell = PowerShell.openSession()) {
+            // Execute a command in PowerShell session.
+            PowerShellResponse response = powerShell.executeCommand(commandString);
+            // Print results.
+            System.out.println("List Processes:" + response.getCommandOutput());
+        } catch(PowerShellNotAvailableException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // Used for everything else.
     public static void powerShellExec (String command, int numberOfFiles) {
         try {
-            // Executing the command
+            // Executing the command.
             Process powerShellProcess = Runtime.getRuntime().exec("powershell.exe " + command);
-            // Getting the results
+            // Logging the results with or without a progress bar.
             reader("bufferedReader", powerShellProcess.getInputStream(), numberOfFiles);
             reader("errorReader", powerShellProcess.getErrorStream(), 0);
             powerShellProcess.getOutputStream().close();
@@ -34,41 +49,44 @@ public class CommandExec {
 
     //
     // While executing each command, the powershell feedback is logged
-    // as well as the progress bar is updated accordingly.
+    // and the progress bar is updated accordingly.
     //
     public static void reader(String name, InputStream stream, int numberOfFiles) {
-        try (ProgressBar progressBar = new ProgressBar("Progress: ", numberOfFiles)){
-            String line = "";
-            // Executes the powershell command.
-            InputStreamReader inputStream = new InputStreamReader (stream);
-            BufferedReader reader = new BufferedReader (inputStream);
-            // Logging the results.
-            while ((line = reader.readLine()) != null) {
-                // Updating the progress bar.
-                if(line.matches("(InProgress : False)")) {
-                    progressBar.step();
-                } else if (name == "errorReader") {
-                    System.out.println(line);
+        InputStreamReader inputStream = new InputStreamReader (stream);
+        BufferedReader reader = new BufferedReader (inputStream);
+        String log = "";
+
+        // If there are number of files provided - log with a progress bar.
+        if (numberOfFiles > 0) {
+            try (ProgressBar progressBar = new ProgressBar("Progress: ", numberOfFiles)) {
+                while ((log = reader.readLine()) != null) {
+                    // Updating the progress bar.
+                    if (log.matches("(InProgress : False)")) {
+                        progressBar.step();
+                    } else if (name == "errorReader") {
+                        System.out.println(log);
+                    }
                 }
+                inputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            inputStream.close ();
-        } catch (Exception e){
-            e.printStackTrace();
+        // In any other case log is without a progress bar.
+        } else {
+            try {
+                while ((log = reader.readLine()) != null) {
+                    if (log.matches("(PSVersion).*")) {
+
+                    } else if (name == "errorReader") {
+                        System.out.println(log);
+                    }
+                }
+                inputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static void jPowerShellExec (String commandString) {
-        System.out.println("Executing: " + commandString + "\nAudio files processed: " + sumOfFiles +
-                        "\\" + (processedFileCount += 1));
-        //Creates PowerShell session (we can execute several commands in the same session)
-        try (PowerShell powerShell = PowerShell.openSession()) {
-            //Execute a command in PowerShell session
-            PowerShellResponse response = powerShell.executeCommand(commandString);
-            //Print results
-            System.out.println("List Processes:" + response.getCommandOutput());
-        } catch(PowerShellNotAvailableException ex) {
-            ex.printStackTrace();
-        }
-    }
 }
 

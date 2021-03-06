@@ -19,7 +19,7 @@ public class ExtractDateTime {
             BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
             String[] dateAndTime = attr.lastModifiedTime().toString().split("[a-zA-Z]");
 
-            // Extract and format the date for terminal command
+            // Extract and format the date for terminal command.
             return "sudo date -f %Y%m%d-%H%M%S " +
                     dateAndTime[0].replace("-","") + "-" +
                     dateAndTime[1].replace(":","");

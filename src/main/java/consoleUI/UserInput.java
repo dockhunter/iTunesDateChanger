@@ -44,6 +44,7 @@ public class UserInput {
     public static void processInput(String userPath) throws IOException, WrongFormatException {
         if (pathValidator(userPath)) {
             collectFiles(userPath);
+
             powerShellExec("taskkill /f /im explorer.exe", 0);
             for (String audioFile : supportedAudioFiles) {
                 commandFeed += audioFile;
@@ -81,7 +82,7 @@ public class UserInput {
             System.out.println("Executing: " + iTunesOpenCommand + commandFeed +
                     "\nProcessing audio files: " + sumOfFiles +
                     "\\" + (processedFileCount += numberOfFiles));
-            // Executing the powershell commands
+            // Executing the powershell commands.
             powerShellExec(iTunesOpenCommand + commandFeed, numberOfFiles);
         } catch (Exception e) {
             e.printStackTrace();

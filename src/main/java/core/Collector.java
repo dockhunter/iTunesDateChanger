@@ -8,10 +8,11 @@ import static consoleUI.UserInput.*;
 
 public class Collector {
     public static boolean pathValidator(String userPath) {
-        File folder = new File(userPath.replaceAll("(\\\\|/)$", ""));
-        File[] listOfFiles = folder.listFiles();
-
-        if (listOfFiles != null) {
+        File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
+        File[] listOfFiles = input.listFiles();
+        if (input.isFile()) {
+            return true;
+        } else if (input.isDirectory() && listOfFiles != null) {
             return true;
         } else {
             return false;
@@ -19,8 +20,8 @@ public class Collector {
     }
 
     public static void collectFiles(String userPath) {
-        File folder = new File(userPath.replaceAll("(\\\\|/)$", ""));
-        File[] listOfFiles = folder.listFiles();
+        File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
+        File[] listOfFiles = input.listFiles();
 
         String iTunesAddCommand = "$itunes.LibraryPlaylist.addFile";
         String iTunesConvertCommand = "$itunes.ConvertFile";

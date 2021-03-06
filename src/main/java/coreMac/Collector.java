@@ -8,7 +8,7 @@ import static consoleUIMac.UserInput.audioFiles;
 import static consoleUIMac.UserInput.sumOfFiles;
 
 public class Collector {
-    // Validates the path inputted by the user
+    // Validates the path inputted by the user.
     public static boolean pathValidator(String userPath) {
         File folder = new File(userPath.replaceAll("(\\\\|/)$", ""));
         File[] listOfFiles = folder.listFiles();
@@ -22,7 +22,7 @@ public class Collector {
 
     //
     // Runs through the given directory (recursively) and checks for audio files
-    // that have specific audio formats. Each audio file is then saved into and array list
+    // that have specific audio formats. Each audio file is then saved into and array list.
     //
     public static void collectFiles(String userPath) {
         File folder = new File(userPath.replaceAll("(\\\\|/)$", ""));
