@@ -22,11 +22,11 @@ public class CommandExec {
     public static void jPowerShellExec (String commandString) {
         System.out.println("Executing: " + commandString + "\nAudio files processed: " + sumOfFiles +
                 "\\" + (processedFileCount += 1));
-        // Creates PowerShell session (we can execute several commands in the same session).
+        // Creates PowerShell session.
         try (PowerShell powerShell = PowerShell.openSession()) {
             // Execute a command in PowerShell session.
             PowerShellResponse response = powerShell.executeCommand(commandString);
-            // Print results.
+            // Logging the results
             System.out.println("List Processes:" + response.getCommandOutput());
         } catch(PowerShellNotAvailableException ex) {
             ex.printStackTrace();
@@ -71,12 +71,12 @@ public class CommandExec {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        // In any other case log is without a progress bar.
+        // In any other case, log is without a progress bar.
         } else {
             try {
                 while ((log = reader.readLine()) != null) {
-                    if (log.matches("(PSVersion).*")) {
-
+                    if (log.matches("\n*(PSVersion).*")) {
+                        powerShellReady = true;
                     } else if (name == "errorReader") {
                         System.out.println(log);
                     }
