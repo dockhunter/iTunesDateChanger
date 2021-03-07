@@ -17,10 +17,12 @@ public class Main {
                 } else if (!powerShellReady) {
                     System.err.println("ERROR: PowerShell not found,\n" +
                             "please make sure you have PowerShell installed!");
+                    break;
                 } else if (osType.matches("(Mac)")) {
                     consoleUIMac.UserInput.startInput();
                 } else {
                     System.err.println("ERROR: Unsupported Operation System!");
+                    break;
                 }
             }
         } catch (Exception e) {
