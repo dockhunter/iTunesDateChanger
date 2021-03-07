@@ -13,6 +13,7 @@ public class Collector {
     public static boolean pathValidator(String userPath) {
         File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
         File[] listOfFiles = input.listFiles();
+
         if (input.isFile()) {
             return true;
         } else if (input.isDirectory() && listOfFiles != null) {
@@ -27,7 +28,7 @@ public class Collector {
         File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
         List<File> listOfFiles = new ArrayList<>();
 
-        // If the provided path is a file itself, it is added straight to the array
+        // If the provided path is a single file, it is added straight to the array
         if (input.isFile()) {
             listOfFiles.add(input);
         } else {
@@ -43,12 +44,12 @@ public class Collector {
                 Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|aac|aiff|wav)$", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(file.getName());
                 if (file.isFile() && matcher.find()) {
-                    String filePath = "(\\\"" + userPath + "\\" + file.getName() + "\\\"); ";
+                    String filePath = "(\\\"" + file + "\\\"); ";
                     String fileDate = ExtractDateTime.extract(file + "") + "; ";
                     supportedAudioFiles.add(fileDate + iTunesAddCommand + filePath);
                     sumOfFiles++;
                 } else if (file.isFile() && file.getName().matches(".+?\\.(wma|WMA)$")) {
-                    String filePath = "(\"" + userPath + "\\" + file.getName() + "\")";
+                    String filePath = "(\"" + file + "\")";
                     String fileDate = ExtractDateTime.extract(file + "") + " ;";
                     convertibleAudioFiles.add(fileDate + iTunesConvertCommand + filePath);
                     sumOfFiles++;

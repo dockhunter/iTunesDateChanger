@@ -48,7 +48,9 @@ public class UserInput {
             collectFiles(userPath);
 
             // For safety reasons killing the explorer in Windows
-            powerShellExec("taskkill /f /im explorer.exe", 0);
+            if (supportedAudioFiles.size() > 6000) {
+                powerShellExec("taskkill /f /im explorer.exe", 0);
+            }
             for (String audioFile : supportedAudioFiles) {
                 commandFeed += audioFile;
                 // To prevent overloading powershell with commands
