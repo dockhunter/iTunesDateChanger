@@ -1,12 +1,15 @@
 package core;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static consoleUI.UserInput.*;
 
 public class Collector {
+    // Validating if the path is executable
     public static boolean pathValidator(String userPath) {
         File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
         File[] listOfFiles = input.listFiles();
@@ -19,9 +22,19 @@ public class Collector {
         }
     }
 
+    // Recursively collecting audio files that can be found in the provided path
     public static void collectFiles(String userPath) {
         File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
-        File[] listOfFiles = input.listFiles();
+        List<File> listOfFiles = new ArrayList<>();
+
+        // If the provided path is a file itself, it is added straight to the array
+        if (input.isFile()) {
+            listOfFiles.add(input);
+        } else {
+            for (File file : input.listFiles()) {
+                listOfFiles.add(file);
+            }
+        }
 
         String iTunesAddCommand = "$itunes.LibraryPlaylist.addFile";
         String iTunesConvertCommand = "$itunes.ConvertFile";
