@@ -11,14 +11,14 @@ public class Main {
         try {
             while(true) {
                 // According to the os type the matching package is chosen.
-                if (osType.matches("(Windows)") && powerShellReady) {
+                if (osType.matches("(Windows).*") && powerShellReady) {
                     System.out.println("Enter a path to your music folder: ");
                     consoleUI.UserInput.startInput();
                 } else if (!powerShellReady) {
                     System.err.println("ERROR: PowerShell not found,\n" +
                             "please make sure you have PowerShell installed!");
                     break;
-                } else if (osType.matches("(Mac)")) {
+                } else if (osType.matches("(Mac).*")) {
                     System.out.println("Enter a path to your music folder: ");
                     consoleUIMac.UserInput.startInput();
                 } else {

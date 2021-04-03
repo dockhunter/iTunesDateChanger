@@ -19,12 +19,16 @@ public class UserInput {
 
     // Powershell commands for starting up and adding files to iTunes.
     private static final String iTunesOpenCommand = "$itunes = New-Object -ComObject iTunes.Application; ";
+    private static final String iTunesTaskChecker = "$itunes = Get-Process iTunes -ErrorAction SilentlyContinue; " +
+                                                    "if ($itunes) {$itunes | Stop-Process -Force}";
+    private static final String explorerTaskKill = "taskkill /f /im explorer.exe";
     private static String commandFeed = "";
     public static int sumOfFiles = 0;
     public static int processedFileCount = 0;
+    public static boolean powerShellReady = false;
+
     public static List<String> supportedAudioFiles = new ArrayList<>();
     public static List<String> convertibleAudioFiles = new ArrayList<>();
-    public static boolean powerShellReady = false;
 
 
     // Starting function that keeps the input feed alive.
@@ -46,10 +50,11 @@ public class UserInput {
     public static void processInput(String userPath) throws IOException, WrongFormatException {
         if (pathValidator(userPath)) {
             collectFiles(userPath);
-
+            // Checking if iTunes is already running close it
+            powerShellExec(iTunesTaskChecker, 0);
             // For safety reasons killing the explorer in Windows
             if (supportedAudioFiles.size() > 6000) {
-                powerShellExec("taskkill /f /im explorer.exe", 0);
+                powerShellExec(explorerTaskKill, 0);
             }
             for (String audioFile : supportedAudioFiles) {
                 commandFeed += audioFile;
