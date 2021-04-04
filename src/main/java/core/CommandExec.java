@@ -75,6 +75,7 @@ public class CommandExec {
         } else {
             try {
                 while ((log = reader.readLine()) != null) {
+                    // For a function in Main to check for powershell.exe availability
                     if (log.matches("\n*(PSVersion).*")) {
                         powerShellReady = true;
                     } else if (name == "errorReader") {

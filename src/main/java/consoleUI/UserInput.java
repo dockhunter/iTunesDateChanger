@@ -22,7 +22,10 @@ public class UserInput {
     private static final String iTunesTaskChecker = "$itunes = Get-Process iTunes -ErrorAction SilentlyContinue; " +
                                                     "if ($itunes) {$itunes | Stop-Process -Force}";
     private static final String explorerTaskKill = "taskkill /f /im explorer.exe";
+    private static final String explorerTaskStart = "start explorer.exe";
+    private static final String resyncDate = "W32tm /resync /force";
     private static String commandFeed = "";
+    private static boolean explorerKilled = false;
     public static int sumOfFiles = 0;
     public static int processedFileCount = 0;
     public static boolean powerShellReady = false;
@@ -50,14 +53,18 @@ public class UserInput {
     public static void processInput(String userPath) throws IOException, WrongFormatException {
         if (pathValidator(userPath)) {
             collectFiles(userPath);
+
             // Checking if iTunes is already running close it
             powerShellExec(iTunesTaskChecker, 0);
+
             // For safety reasons killing the explorer in Windows
             if (supportedAudioFiles.size() > 6000) {
                 powerShellExec(explorerTaskKill, 0);
+                explorerKilled = true;
             }
             for (String audioFile : supportedAudioFiles) {
                 commandFeed += audioFile;
+
                 // To prevent overloading powershell with commands
                 // the commandFeed is executed if it has more than 200 files registered
                 // or the string itself contains more than 25000 characters.
@@ -71,14 +78,19 @@ public class UserInput {
             }
             executeInput(commandFeed.split(";").length/2);
 
-            if(convertibleAudioFiles.size() != 0) {
+            if (convertibleAudioFiles.size() != 0) {
                 ProgressBarBuilder pbb = new ProgressBarBuilder();
                 ProgressBar.wrap(convertibleAudioFiles,pbb).forEach(
                         audioFile -> jPowerShellExec(iTunesOpenCommand + audioFile));
             }
             // Setting back date and time, resetting variables and finishing the process.
-            powerShellExec( "start explorer.exe; W32tm /resync /force", 0);
+            powerShellExec(resyncDate , 0);
             cleanUpVariables();
+
+            if (explorerKilled) {
+                powerShellExec(explorerTaskStart, 0);
+            }
+
             System.out.println("Process finished.\nYou may enter another path: ");
         } else if (userPath.matches("(EXIT)|(exit)|(q)|(Q)")) {
             System.exit(0);
@@ -95,6 +107,7 @@ public class UserInput {
                     "Executing: " + iTunesOpenCommand + commandFeed +
                     "\nProcessing audio files: " + sumOfFiles +
                     "\\" + (processedFileCount += numberOfFiles));
+
             // Executing the powershell commands.
             powerShellExec(iTunesOpenCommand + commandFeed, numberOfFiles);
         } catch (Exception e) {

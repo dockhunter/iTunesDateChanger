@@ -14,7 +14,7 @@ public class Main {
                 if (osType.matches("(Windows).*") && powerShellReady) {
                     System.out.println("Enter a path to your music folder: ");
                     consoleUI.UserInput.startInput();
-                } else if (!powerShellReady) {
+                } else if (osType.matches("(Windows).*") && !powerShellReady) {
                     System.err.println("ERROR: PowerShell not found,\n" +
                             "please make sure you have PowerShell installed!");
                     break;
