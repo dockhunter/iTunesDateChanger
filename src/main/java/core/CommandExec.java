@@ -35,9 +35,10 @@ public class CommandExec {
 
     // Used for everything else.
     public static void powerShellExec (String command, int numberOfFiles) {
+        String[] cmdArray = new String[]{"powershell.exe ", command};
         try {
             // Executing the command.
-            Process powerShellProcess = Runtime.getRuntime().exec("powershell.exe " + command);
+            Process powerShellProcess = Runtime.getRuntime().exec(cmdArray);
             // Logging the results with or without a progress bar.
             reader("bufferedReader", powerShellProcess.getInputStream(), numberOfFiles);
             reader("errorReader", powerShellProcess.getErrorStream(), 0);

@@ -17,7 +17,7 @@ import static core.CommandExec.powerShellExec;
 
 public class UserInput {
 
-    // Powershell commands for starting up and adding files to iTunes.
+    // Powershell commands for starting up and adding files into iTunes.
     private static final String iTunesOpenCommand = "$itunes = New-Object -ComObject iTunes.Application; ";
     private static final String iTunesTaskChecker = "$itunes = Get-Process iTunes -ErrorAction SilentlyContinue; " +
                                                     "if ($itunes) {$itunes | Stop-Process -Force}";
@@ -54,29 +54,30 @@ public class UserInput {
         if (pathValidator(userPath)) {
             collectFiles(userPath);
 
-            // Checking if iTunes is already running close it
+            // Checking if iTunes is already running close it.
             powerShellExec(iTunesTaskChecker, 0);
 
-            // For safety reasons killing the explorer in Windows
-            if (supportedAudioFiles.size() > 6000) {
-                powerShellExec(explorerTaskKill, 0);
-                explorerKilled = true;
-            }
-            for (String audioFile : supportedAudioFiles) {
-                commandFeed += audioFile;
-
+            if(supportedAudioFiles.size() != 0) {
+                // For safety reasons killing the explorer in Windows.
+                if (supportedAudioFiles.size() > 6000) {
+                    powerShellExec(explorerTaskKill, 0);
+                    explorerKilled = true;
+                }
                 // To prevent overloading powershell with commands
                 // the commandFeed is executed if it has more than 200 files registered
                 // or the string itself contains more than 25000 characters.
-                if (iTunesOpenCommand.length() + commandFeed.length() > 25000) {
-                    executeInput(commandFeed.split(";").length/2);
-                    commandFeed = "";
-                } else if (commandFeed.split(";").length - 1 == 400) {
-                    executeInput(200);
-                    commandFeed = "";
+                for (String audioFile : supportedAudioFiles) {
+                    commandFeed += audioFile;
+                    if (iTunesOpenCommand.length() + commandFeed.length() > 25000) {
+                        executeInput(commandFeed.split(";").length/2);
+                        commandFeed = "";
+                    } else if (commandFeed.split(";").length - 1 == 400) {
+                        executeInput(200);
+                        commandFeed = "";
+                    }
                 }
+                executeInput(commandFeed.split(";").length/2);
             }
-            executeInput(commandFeed.split(";").length/2);
 
             if (convertibleAudioFiles.size() != 0) {
                 ProgressBarBuilder pbb = new ProgressBarBuilder();

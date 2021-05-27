@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import static consoleUI.UserInput.*;
 
 public class Collector {
-    // Validating if the path is executable
+    // Validating if the path is executable.
     public static boolean pathValidator(String userPath) {
         File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
         File[] listOfFiles = input.listFiles();
@@ -23,12 +23,13 @@ public class Collector {
         }
     }
 
-    // Recursively collecting audio files that can be found in the provided path
+    // Recursively collecting audio files that can be found in the provided path.
     public static void collectFiles(String userPath) {
         File input = new File(userPath.replaceAll("(\\\\|/)$", ""));
         List<File> listOfFiles = new ArrayList<>();
 
         // If the provided path is a single file, it is added straight to the array
+        // otherwise and array of found files is created.
         if (input.isFile()) {
             listOfFiles.add(input);
         } else {
@@ -43,7 +44,7 @@ public class Collector {
         for (File file : listOfFiles) {
                 Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|aac|aiff|wav)$", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(file.getName());
-                if (file.isFile() && matcher.find()) {
+                if (file.isFile() && matcher.matches()) {
                     String filePath = "(\\\"" + file + "\\\"); ";
                     String fileDate = ExtractDateTime.extract(file + "") + "; ";
                     supportedAudioFiles.add(fileDate + iTunesAddCommand + filePath);
