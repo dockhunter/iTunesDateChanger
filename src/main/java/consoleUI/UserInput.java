@@ -84,13 +84,14 @@ public class UserInput {
                 ProgressBar.wrap(convertibleAudioFiles,pbb).forEach(
                         audioFile -> jPowerShellExec(iTunesOpenCommand + audioFile));
             }
-            // Setting back date and time, resetting variables and finishing the process.
-            powerShellExec(resyncDate , 0);
-            cleanUpVariables();
 
             if (explorerKilled) {
                 powerShellExec(explorerTaskStart, 0);
             }
+
+            // Setting back date and time, resetting variables and finishing the process.
+            powerShellExec(resyncDate , 0);
+            cleanUpVariables();
 
             System.out.println("Process finished.\nYou may enter another path: ");
         } else if (userPath.matches("(EXIT)|(exit)|(q)|(Q)")) {
