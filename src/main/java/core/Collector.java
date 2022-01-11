@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static consoleUI.UserInput.*;
+import static core.CommandExec.powerShellExec;
 
 public class Collector {
     // Validating if the path is executable.
@@ -42,22 +43,26 @@ public class Collector {
         String iTunesConvertCommand = "$itunes.ConvertFile";
 
         for (File file : listOfFiles) {
+                String fileName = file.getName();
                 Pattern pattern = Pattern.compile(".+?\\.(m4a|mp3|aif|aac|aiff|wav)$", Pattern.CASE_INSENSITIVE);
-                Matcher matcher = pattern.matcher(file.getName());
-                if (file.isFile() && matcher.matches()) {
-                    String filePath = "(\\\"" + file + "\\\"); ";
-                    String fileDate = ExtractDateTime.extract(file + "") + "; ";
-                    supportedAudioFiles.add(fileDate + iTunesAddCommand + filePath);
-                    sumOfFiles++;
-                } else if (file.isFile() && file.getName().matches(".+?\\.(wma|WMA)$")) {
-                    String filePath = "(\"" + file + "\")";
-                    String fileDate = ExtractDateTime.extract(file + "") + " ;";
-                    convertibleAudioFiles.add(fileDate + iTunesConvertCommand + filePath);
-                    sumOfFiles++;
+                Matcher matcher = pattern.matcher(fileName);
+                if (file.isFile()) {
+                    if (matcher.matches()) {
+                        String filePath = "(\\\"" + file + "\\\"); ";
+                        String fileDate = ExtractDateTime.extract(file + "") + "; ";
+                        supportedAudioFiles.add(fileDate + iTunesAddCommand + filePath);
+                        sumOfFiles++;
+                    } else if (fileName.matches(".+?\\.(wma|WMA)$")) {
+                        String filePath = "(\"" + file + "\")";
+                        String fileDate = ExtractDateTime.extract(file + "") + " ;";
+                        convertibleAudioFiles.add(fileDate + iTunesConvertCommand + filePath);
+                        sumOfFiles++;
+                    }
                 } else if (file.isDirectory()) {
-                    collectFiles(userPath + "\\" + file.getName());
+                    collectFiles(userPath + "\\" + fileName);
                 }
         }
-        System.out.println("Number of compatible audio files: " + sumOfFiles);
+        System.out.println("Number of compatible audio files: " + sumOfFiles +
+                "\nNumber of audio files (.wma) needs conversion: " + convertibleAudioFiles.size());
     }
 }

@@ -17,7 +17,10 @@ import static core.CommandExec.powerShellExec;
 
 public class UserInput {
 
+    //
     // Powershell commands for starting up and adding files into iTunes.
+    // FYI: Pipe variable with "Get-Member" will get all methods for the give app
+    //
     private static final String iTunesOpenCommand = "$itunes = New-Object -ComObject iTunes.Application; ";
     private static final String iTunesTaskChecker = "$itunes = Get-Process iTunes -ErrorAction SilentlyContinue; " +
                                                     "if ($itunes) {$itunes | Stop-Process -Force}";
@@ -32,7 +35,6 @@ public class UserInput {
 
     public static List<String> supportedAudioFiles = new ArrayList<>();
     public static List<String> convertibleAudioFiles = new ArrayList<>();
-
 
     // Starting function that keeps the input feed alive.
     public static void startInput() throws WrongFormatException {

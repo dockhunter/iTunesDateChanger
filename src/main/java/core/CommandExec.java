@@ -35,6 +35,7 @@ public class CommandExec {
 
     // Used for everything else.
     public static void powerShellExec (String command, int numberOfFiles) {
+        command = (command.matches(".+?`.+?")) ? command.replace("`", "``") : command;
         String[] cmdArray = new String[]{"powershell.exe ", command};
         try {
             // Executing the command.
