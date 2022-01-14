@@ -19,7 +19,7 @@ public class UserInput {
 
     //
     // Powershell commands for starting up and adding files into iTunes.
-    // FYI: Pipe variable with "Get-Member" will get all methods for the give app
+    // FYI: "$itunes | Get-Member" will get all methods for the give app
     //
     private static final String iTunesOpenCommand = "$itunes = New-Object -ComObject iTunes.Application; ";
     private static final String iTunesTaskChecker = "$itunes = Get-Process iTunes -ErrorAction SilentlyContinue; " +
@@ -42,7 +42,7 @@ public class UserInput {
         try {
             String userPath = input.readLine();
             processInput(userPath);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -52,7 +52,7 @@ public class UserInput {
     // that have specific audio formats. The whole path to each audio file is then passed
     // into an execution function where they are executed via powershell commands.
     //
-    public static void processInput(String userPath) throws IOException, WrongFormatException {
+    public static void processInput(String userPath) throws IOException, WrongFormatException, InterruptedException {
         if (pathValidator(userPath)) {
             collectFiles(userPath);
 
@@ -94,8 +94,10 @@ public class UserInput {
             // Setting back date and time, resetting variables and finishing the process.
             powerShellExec(resyncDate , 0);
             cleanUpVariables();
-
-            System.out.println("Process finished.\nYou may enter another path: ");
+            
+            // Time needed for iTunes to process added song(s)
+            Thread.sleep(4000);
+            System.out.println("Process finished.");
         } else if (userPath.matches("(EXIT)|(exit)|(q)|(Q)")) {
             System.exit(0);
         } else {

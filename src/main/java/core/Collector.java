@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static consoleUI.UserInput.*;
-import static core.CommandExec.powerShellExec;
 
 public class Collector {
     // Validating if the path is executable.
