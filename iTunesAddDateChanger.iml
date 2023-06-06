@@ -14,5 +14,14 @@
     <orderEntry type="library" name="Maven: me.tongfei:progressbar:0.9.0" level="project" />
     <orderEntry type="library" name="Maven: org.jline:jline:3.16.0" level="project" />
     <orderEntry type="library" name="Maven: com.profesorfalken:jPowerShell:3.1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.ealva:ealvatag:0.4.6" level="project" />
+    <orderEntry type="library" name="Maven: com.squareup.okio:okio:2.9.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.4.10" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.4.10" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:20.0" level="project" />
+    <orderEntry type="library" name="Maven: com.ealva:ealvalog:0.5.4" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:20.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.ealva:ealvalog-core:0.5.4" level="project" />
+    <orderEntry type="library" name="Maven: com.ealva:ealvalog-java:0.5.4" level="project" />
   </component>
 </module>

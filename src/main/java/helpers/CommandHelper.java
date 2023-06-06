@@ -1,4 +1,4 @@
-package core;
+package helpers;
 
 import com.profesorfalken.jpowershell.PowerShell;
 import com.profesorfalken.jpowershell.PowerShellNotAvailableException;
@@ -6,12 +6,13 @@ import com.profesorfalken.jpowershell.PowerShellResponse;
 import me.tongfei.progressbar.ProgressBar;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import static consoleUI.UserInput.*;
+import static consoleUI.InputFromWin.*;
 
-public class CommandExec {
+public class CommandHelper {
 
     //
     // Some commands will change the date and time setting for Windows.
@@ -19,7 +20,7 @@ public class CommandExec {
     // certain websites can raise issues regarding outdated or not-yet existing certificates.
     //
     // Used for converting audio files.
-    public static void jPowerShellExec (String commandString) {
+    public void jPowerShellExec (String commandString) {
         System.out.println("Executing: " + commandString + "\nAudio files processed: " + sumOfFiles +
                 "\\" + (processedFileCount += 1));
         // Creates PowerShell session.
@@ -28,13 +29,13 @@ public class CommandExec {
             PowerShellResponse response = powerShell.executeCommand(commandString);
             // Logging the results
             System.out.println("List Processes:" + response.getCommandOutput());
-        } catch(PowerShellNotAvailableException ex) {
-            ex.printStackTrace();
+        } catch(PowerShellNotAvailableException exception) {
+            System.err.println(exception);
         }
     }
 
     // Used for everything else.
-    public static void powerShellExec (String command, int numberOfFiles) {
+    public void powerShellExec (String command, int numberOfFiles) {
         command = (command.matches(".+?`.+?")) ? command.replace("`", "``") : command;
         String[] cmdArray = new String[]{"powershell.exe ", command};
         try {
@@ -44,8 +45,8 @@ public class CommandExec {
             reader("bufferedReader", powerShellProcess.getInputStream(), numberOfFiles);
             reader("errorReader", powerShellProcess.getErrorStream(), 0);
             powerShellProcess.getOutputStream().close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            System.err.println(exception);
         }
     }
 
@@ -53,7 +54,7 @@ public class CommandExec {
     // While executing each command, the powershell feedback is logged
     // and the progress bar is updated accordingly.
     //
-    public static void reader(String name, InputStream stream, int numberOfFiles) {
+    public void reader(String name, InputStream stream, int numberOfFiles) {
         InputStreamReader inputStream = new InputStreamReader (stream);
         BufferedReader reader = new BufferedReader (inputStream);
         String log = "";
@@ -70,10 +71,10 @@ public class CommandExec {
                     }
                 }
                 inputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                System.err.println(exception);
             }
-        // In any other case, log is without a progress bar.
+            // In any other case, log is without a progress bar.
         } else {
             try {
                 while ((log = reader.readLine()) != null) {
@@ -85,11 +86,33 @@ public class CommandExec {
                     }
                 }
                 inputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                System.err.println(exception);
             }
         }
     }
 
-}
+    //
+    // The received data is fed into the terminal.
+    //
+    // Some commands will change the date and time setting for the Mac.
+    // It is advisable to not browse the internet during this process as
+    // certain websites can raise issues regarding outdated or not-yet existing certificates.
+    //
+    public void macTerminalExec(String command) {
+        try {
+            // Executing through command prompt.
+            String[] arguments = new String[] {"/bin/bash", "-c", command};
+            ProcessBuilder builder = new ProcessBuilder(arguments);
+            builder.redirectErrorStream(true);
+            Process process = builder.start();
 
+            // Logging.
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            System.out.println(bufferedReader.readLine());
+        }  catch (IOException exception) {
+            System.err.println(exception);
+        }
+    }
+}
